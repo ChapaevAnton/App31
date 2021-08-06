@@ -4,6 +4,8 @@ import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
+import java.util.*
+import java.util.concurrent.Executors
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.min
@@ -12,10 +14,16 @@ import kotlin.math.sin
 class ClockView @JvmOverloads constructor(context: Context, attributeSet: AttributeSet? = null) :
     View(context, attributeSet) {
 
-    var centerX = 0f
-    var centerY = 0f
-    var radius = 0f
-    var scaleSize = 60f
+    companion object {
+        const val HOUR_HAND = 1
+        const val MINUTE_HAND = 2
+        const val SECOND_HAND = 3
+    }
+
+    private var centerX = 0f
+    private var centerY = 0f
+    private var radius = 0f
+    private var scaleSize = 60f
 
     private var isStaticPictureDraw: Boolean = false
     private lateinit var bitmap: Bitmap
@@ -23,21 +31,27 @@ class ClockView @JvmOverloads constructor(context: Context, attributeSet: Attrib
 
     private val dashColor = Color.BLUE
     private val digitColor = Color.WHITE
-    private val arrowColor = Color.RED
+    private val handSecondColor = Color.RED
+    private val handMinuteColor = Color.GREEN
+    private val handHourColor = Color.MAGENTA
     private val circleColor = Color.BLACK
 
     private lateinit var dashPaint: Paint
     private lateinit var clockPaint: Paint
     private lateinit var circleClockPaint: Paint
+    private lateinit var handsPaint: Paint
 
     private val rect = Rect()
 
     private val numbers = intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
 
+    // TODO: 06.08.2021 add set method time and update time
+    private var calendar = Calendar.getInstance()
 
     init {
         initDrawingTools()
     }
+
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
 
@@ -72,9 +86,64 @@ class ClockView @JvmOverloads constructor(context: Context, attributeSet: Attrib
         }
 
         canvas?.drawBitmap(bitmap, centerX - radius, centerY - radius, null)
+
+        drawHands(canvas)
+
+        postInvalidateDelayed(1000)
+
+    }
+
+    private fun drawHands(canvas: Canvas?) {
+
+        calendar = Calendar.getInstance()
+
+        canvas?.translate(centerX, centerY)
+
+        val hour = calendar.get(Calendar.HOUR)
+
+        drawHand(canvas, ((hour + calendar.get(Calendar.MINUTE) / 60.0) * 5.0), HOUR_HAND)
+        drawHand(canvas, calendar.get(Calendar.MINUTE).toDouble(), MINUTE_HAND)
+        drawHand(canvas, calendar.get(Calendar.SECOND).toDouble(), SECOND_HAND)
+
+
+    }
+
+    private fun drawHand(canvas: Canvas?, position: Double, hourHand: Int) {
+
+        var handRadius = 0f
+
+        when (hourHand) {
+            HOUR_HAND -> {
+                handsPaint.strokeWidth = scaleSize * 0.5f
+                handsPaint.color = handHourColor
+                handRadius = radius * 0.7f
+            }
+            MINUTE_HAND -> {
+                handsPaint.strokeWidth = scaleSize * 0.3f
+                handsPaint.color = handMinuteColor
+                handRadius = radius * 0.9f
+            }
+            SECOND_HAND -> {
+                handsPaint.strokeWidth = scaleSize * 0.2f
+                handsPaint.color = handSecondColor
+                handRadius = radius * 0.9f
+            }
+        }
+
+        val angle = PI * position / 30 - PI / 2
+
+        canvas?.drawLine(
+            0f,
+            0f,
+            (cos(angle) * handRadius).toFloat(),
+            (sin(angle) * handRadius).toFloat(),
+            handsPaint
+        )
+
     }
 
     private fun drawStaticPicture() {
+
 
         bitmap = Bitmap.createBitmap(
             (centerX * 2).toInt(),
@@ -136,6 +205,11 @@ class ClockView @JvmOverloads constructor(context: Context, attributeSet: Attrib
             color = circleColor
             style = Paint.Style.FILL
             strokeWidth = 10f
+            isAntiAlias = true
+        }
+
+        handsPaint = Paint().apply {
+            style = Paint.Style.STROKE
             isAntiAlias = true
         }
     }
