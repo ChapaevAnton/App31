@@ -7,24 +7,12 @@
     android:background="@color/white"
     tools:context=".MainActivity">
 
-    <com.w4eret1ckrtb1tch.app31.CustomView
-        android:id="@+id/custom_view"
-        android:layout_width="411dp"
-        android:layout_height="297dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button"
-        app:stroke_color="@android:color/holo_red_dark"
-        app:stroke_width="10" />
-
-    <Button
-        android:id="@+id/button"
+    <com.w4eret1ckrtb1tch.app31.ClockView
+        android:id="@+id/clockView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="160dp"
-        android:text="click"
-        app:layout_constraintBottom_toTopOf="@+id/custom_view"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

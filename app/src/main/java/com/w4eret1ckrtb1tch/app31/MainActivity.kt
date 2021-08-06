@@ -11,12 +11,5 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
 
-        val button: Button = findViewById(R.id.button)
-        val customView: CustomView = findViewById(R.id.custom_view)
-
-        button.setOnClickListener {
-            customView.setWidthStroke(50f)
-            customView.setColorStroke(ContextCompat.getColor(this, R.color.green))
-        }
     }
 }
