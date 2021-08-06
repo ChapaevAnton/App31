@@ -41,10 +41,56 @@ class CustomView @JvmOverloads constructor(context: Context, attr: AttributeSet?
         invalidate()
     }
 
+    // TODO: 06.08.2021 31.6. Paint
+    private val colorGradient = Paint().apply {
+        style = Paint.Style.FILL
+        flags = Paint.ANTI_ALIAS_FLAG
+    }
+
+
+    private val colors = intArrayOf(
+        Color.YELLOW,
+        Color.BLUE,
+        Color.CYAN,
+        Color.MAGENTA,
+        Color.RED
+    )
+    private val positions = floatArrayOf(0.2f, 0.3f, 0.5f, 0.6f, 0.7f)
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+//        colorGradient.shader =
+//            LinearGradient(0f, 0f, 0f, h.toFloat(), Color.RED, Color.YELLOW, Shader.TileMode.MIRROR)
+
+//        colorGradient.shader =
+//            LinearGradient(0f, 0f, 0f, h.toFloat(), colors, positions, Shader.TileMode.MIRROR)
+//        colorGradient.shader =
+
+//            RadialGradient(
+//                w.toFloat() / 2,
+//                h.toFloat() / 2,
+//                100f,
+//                Color.RED,
+//                Color.YELLOW,
+//                Shader.TileMode.MIRROR
+//            )
+
+        colorGradient.shader =
+            RadialGradient(
+                w.toFloat() / 2,
+                h.toFloat() / 2,
+                100f, colors, positions,
+                Shader.TileMode.MIRROR
+            )
+    }
+
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         Log.d("TAG", "onAttachedToWindow: ok")
     }
+
+
+    val color = Color.argb(100, 255, 87, 34)
+
 
     //произвольная фигура
     private val a = Point(0, 0)
@@ -74,12 +120,12 @@ class CustomView @JvmOverloads constructor(context: Context, attr: AttributeSet?
 
     override fun onDraw(canvas: Canvas?) {
 
-        textPath.addCircle(width.toFloat() / 2, height.toFloat() / 2, 200f,Path.Direction.CW)
+        textPath.addCircle(width.toFloat() / 2, height.toFloat() / 2, 400f, Path.Direction.CW)
 
         canvas?.let {
             //текст
-            it.drawCircle(width.toFloat() / 2, height.toFloat() / 2, 200f, getPaintColor(Color.RED))
-            it.drawTextOnPath("CustomView", textPath, 0f, 0f,textColor)
+            it.drawCircle(width.toFloat() / 2, height.toFloat() / 2, 400f, colorGradient)
+            it.drawTextOnPath("CustomView", textPath, 0f, 0f, textColor)
 //            //заливка
 //            it.drawColor(Color.parseColor("#FF5722"))
 //            //линии
